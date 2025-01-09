@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
-const port = 3000;
 
+// Define a route for /
+app.get('/', (req, res) => {
+  res.send('Welcome to my Node.js app!');
+});
+
+// Define a route for /api
 app.get('/api', (req, res) => {
-  res.send('Hello from Firebase and Node.js!');
+  res.send('Hello from Vercel and Node.js!');
 });
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+module.exports = app; // Export the app for Vercel
