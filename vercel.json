@@ -6,15 +6,12 @@
         "use": "@vercel/node"
       }
     ],
-    "routes": [
-        {
-            "src": "/backend/(.*)",
-            "dest": "index.js"
-          },
-          {
-            "src": "/(.*)",
-            "dest": "index.js"
-          }
-    ]
+    "functions": {
+      "source": "functions",
+      "headers": {
+        "Access-Control-Allow-Origin": "*"
+      },
+      "allowPublic": true  
+    }
   }
   
