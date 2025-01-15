@@ -4,17 +4,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node index.js",
+    "start": "node index.js",
     "build": "echo 'No build script found. You might need to set it up!'"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "firebase-admin": "^13.0.2"
   },
   "engines": {
-  "node": "20.x"
-}
+    "node": "20.x"
+  }
 }
