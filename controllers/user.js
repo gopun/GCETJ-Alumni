@@ -43,13 +43,13 @@ module.exports = {
               `Cloudinary upload failed for field ${fieldName}:`,
               error
             );
-          } finally {
+          } /*  finally {
             fs.unlink(filePath, (err) => {
               if (err) {
                 console.error(`Failed to delete file ${filePath}:`, err);
               }
             });
-          }
+          } */
         }
       }
 
