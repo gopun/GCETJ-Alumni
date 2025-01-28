@@ -1,0 +1,38 @@
+.news-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  white-space: nowrap;
+  position: relative;
+}
+
+.news-marquee {
+  display: inline-block;
+  animation: scroll 15s linear infinite;
+  transition:
+    animation-play-state 0.3s ease,
+    animation-duration 0.3s ease;
+}
+
+.news-item {
+  display: inline-block;
+  margin-right: 50px;
+  font-size: 16px;
+  color: #333;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Hover Effect: Slow down the scroll */
+.news-container:hover .news-marquee {
+  animation-duration: 30s; /* Reduce speed */
+  animation-play-state: paused; /* Stop on hover */
+}

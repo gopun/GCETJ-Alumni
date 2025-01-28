@@ -1,0 +1,52 @@
+/* Second Row: Nav Bar */
+.nav-bar {
+  background-color: #f4a261; /* Example: Light Orange */
+  border-top: 1px solid #ddd;
+  height: 60px; /* Increased height */
+  display: flex;
+  align-items: center; /* Vertically center nav items */
+  justify-content: space-between; /* Space between nav items and login/profile */
+  padding: 0 20px; /* Add padding for spacing */
+  position: relative;
+  z-index: 2;
+}
+
+.nav-bar ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 15px;
+}
+
+.nav-bar li {
+  margin: 0;
+}
+
+.nav-bar a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 5px 10px;
+}
+
+.nav-bar a:hover {
+  color: #333;
+}
+
+.nav-bar a.active {
+  border-bottom: 2px solid #fff; /* Active state indicator */
+  color: #ffeb3b; /* Active link color (Yellow) */
+}
+
+/* Right Section for Login/Profile */
+.nav-bar .nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-bar .nav-right button,
+.nav-bar .nav-right .MuiAvatar-root {
+  margin-left: auto;
+}
