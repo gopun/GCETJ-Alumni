@@ -1,11 +1,3 @@
-const {
-  searchFolder,
-  saveFile,
-  createFolder,
-  CERTIFICATE_FOLDER,
-  PROFILE_PIC_FOLDER,
-  saveOrUpdateFile,
-} = require("../config/drive");
 const fs = require("fs");
 const User = require("../schema/user");
 const { uploadFile } = require("../config/cloudinary");
