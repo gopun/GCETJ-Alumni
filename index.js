@@ -1,26 +1,47 @@
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const dotenv = require("dotenv");
+dotenv.config();
+require("./config/mongo-setup");
+
+const routes = require("./routes/index");
+const errorHandler = require("./handlers/error");
+const successHandler = require("./handlers/success");
+
 const app = express();
 const port = 3000;
 
-app.use(cors());  // Enable CORS for all origins
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_STRING,
+      collectionName: "sessions",
+    }),
+    cookie: {
+      secure: false,
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24,
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    },
+  })
+);
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");  // Allow requests from all domains, or specify domains like: 'https://yourdomain.com'
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  next();
-});
+app.use(
+  cors({
+    origin: process.env.FRONT_END_URL,
+    credentials: true,
+  })
+);
 
-app.use(express.json());  // Middleware to handle JSON request bodies
+app.use(express.json());
 
-// Example Route Handling
-app.get('/', (req, res) => {
-  res.send('Backend is working!');
-});
-
-app.post('/backend', (req, res) => {
-  res.send('Data received!');
-});
+app.use(successHandler, routes);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
