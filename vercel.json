@@ -14,8 +14,7 @@
   ],
   "functions": {
     "routes/*.js": {
-      "memory": 128,
-      "maxBodySize": "10mb"
+      "memory": 128
     }
   }
 }
