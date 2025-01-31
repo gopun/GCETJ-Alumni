@@ -18,7 +18,6 @@ module.exports = {
   login: async (req, res) => {
     try {
       const userData = await User.findOne({ regNumber: req.body.regNumber });
-      console.log("\n userData...", userData);
       if (!userData) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -29,10 +28,16 @@ module.exports = {
       }
 
       req.session.user = { ...userData.toJSON(), password: undefined };
-      delete req.session.user.password;
-      return res.success({
-        message: "Login successful",
-        user: req.session.user,
+      req.session.save((err) => {
+        if (err) {
+          console.error("Error saving session:", err);
+          return res.status(500).send("Failed to save session");
+        }
+        console.log("Session saved:", req.session);
+        return res.success({
+          message: "Login successful",
+          user: req.session.user,
+        });
       });
     } catch (error) {
       console.error("Error Login user:", error.message);

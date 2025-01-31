@@ -3,7 +3,7 @@ const MongoStore = require("connect-mongo");
 export const sessionConfig = {
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_STRING,
     collectionName: "sessions",
