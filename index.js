@@ -23,13 +23,14 @@ app.use(
       collectionName: "sessions",
     }),
     cookie: {
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24,
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
     },
   })
 );
+console.error("\n process.env..", process.env);
 
 app.use(
   cors({
