@@ -3,7 +3,7 @@ const MongoStore = require("connect-mongo");
 export const sessionConfig = {
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_STRING,
     collectionName: "sessions",
@@ -12,7 +12,6 @@ export const sessionConfig = {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
-    domain: process.env.FRONT_END_URL,
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   },
 };
