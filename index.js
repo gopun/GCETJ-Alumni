@@ -38,10 +38,6 @@ app.use(
   })
 );
 
-console.log("\n process.env.FRONT_END_URL..", process.env.FRONT_END_URL);
-console.warn("\n process.env.FRONT_END_URL..", process.env.FRONT_END_URL);
-console.warn("\n process.env..", process.env);
-
 app.use(express.json());
 
 app.use(successHandler, routes);
@@ -50,9 +46,3 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
-
-export const config = {
-  api: {
-    bodyParser: false, // Disables Vercel's body parser
-  },
-};

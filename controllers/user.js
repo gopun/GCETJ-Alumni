@@ -1,6 +1,5 @@
-const fs = require("fs");
 const User = require("../schema/user");
-const { uploadFile } = require("../config/cloudinary");
+// const { uploadFile } = require("../config/cloudinary");
 
 module.exports = {
   getUserData: async (req, res) => {
@@ -13,53 +12,53 @@ module.exports = {
   },
   updateProfile: async (req, res) => {
     try {
-      const files = req.files;
-      const fileConfig = {
-        saveResp: { profile: "", degree: "" },
-        foldername: { profile: PROFILE_PIC_FOLDER, degree: CERTIFICATE_FOLDER },
-      };
+      // const files = req.files;
+      // const fileConfig = {
+      //   saveResp: { profile: "", degree: "" },
+      //   foldername: { profile: PROFILE_PIC_FOLDER, degree: CERTIFICATE_FOLDER },
+      // };
 
-      for (const fieldName of Object.keys(files)) {
-        const file = files[fieldName][0];
-        if (file) {
-          const filePath = file.path;
-          const fileName =
-            req.session.user.regNumber +
-            "." +
-            (file.mimetype.endsWith("pdf") ? "pdf" : file.mimetype.slice(6));
+      // for (const fieldName of Object.keys(files)) {
+      //   const file = files[fieldName][0];
+      //   if (file) {
+      //     const filePath = file.path;
+      //     const fileName =
+      //       req.session.user.regNumber +
+      //       "." +
+      //       (file.mimetype.endsWith("pdf") ? "pdf" : file.mimetype.slice(6));
 
-          const folderName = fileConfig.foldername[fieldName];
+      //     const folderName = fileConfig.foldername[fieldName];
 
-          try {
-            const cloudinaryUploadResult = await uploadFile(
-              filePath,
-              folderName,
-              fileName
-            );
+      //     try {
+      //       const cloudinaryUploadResult = await uploadFile(
+      //         filePath,
+      //         folderName,
+      //         fileName
+      //       );
 
-            fileConfig.saveResp[fieldName] = cloudinaryUploadResult.secure_url;
-          } catch (error) {
-            console.error(
-              `Cloudinary upload failed for field ${fieldName}:`,
-              error
-            );
-          } /*  finally {
-            fs.unlink(filePath, (err) => {
-              if (err) {
-                console.error(`Failed to delete file ${filePath}:`, err);
-              }
-            });
-          } */
-        }
-      }
+      //       fileConfig.saveResp[fieldName] = cloudinaryUploadResult.secure_url;
+      //     } catch (error) {
+      //       console.error(
+      //         `Cloudinary upload failed for field ${fieldName}:`,
+      //         error
+      //       );
+      //     } /*  finally {
+      //       fs.unlink(filePath, (err) => {
+      //         if (err) {
+      //           console.error(`Failed to delete file ${filePath}:`, err);
+      //         }
+      //       });
+      //     } */
+      //   }
+      // }
 
       const updateRecord = {
         email: req.body.email,
         name: req.body.name,
         mobileNumber: req.body.mobileNumber,
         certificateImage:
-          fileConfig.saveResp.degree || req.session.user.certificateImage,
-        userImage: fileConfig.saveResp.profile || req.session.user.userImage,
+          req.body.certificateImage || req.session.user.certificateImage,
+        userImage: req.body.userImage || req.session.user.userImage,
       };
 
       const updatedUser = await User.findOneAndUpdate(
