@@ -12,6 +12,7 @@ export const sessionConfig = {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
+    domain: process.env.FRONT_END_URL,
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   },
 };

@@ -14,7 +14,7 @@ const app = express();
 const port = 3000;
 
 app.use(session(sessionConfig));
-console.error("\n sessionConfig..", sessionConfig);
+console.log("\n sessionConfig..", sessionConfig);
 console.error("\n process.env..", process.env);
 
 app.use(

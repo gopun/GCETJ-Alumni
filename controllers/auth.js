@@ -17,8 +17,6 @@ module.exports = {
   },
   login: async (req, res) => {
     try {
-      console.log("\n in...", req.body);
-
       const userData = await User.findOne({ regNumber: req.body.regNumber });
       console.log("\n userData...", userData);
       if (!userData) {
