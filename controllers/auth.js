@@ -69,7 +69,7 @@ module.exports = {
         }
       );
 
-      const resetLink = `${process.env.FRONT_END_URL}/reset-password/${resetToken}`;
+      const resetLink = `${process.env.FRONT_END_URL}/auth/reset-password/${resetToken}`;
 
       const mailOptions = {
         from: process.env.GMAIL_USER,
