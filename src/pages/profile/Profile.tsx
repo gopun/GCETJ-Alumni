@@ -6,12 +6,14 @@ import {
   Typography,
   Container,
   Avatar,
-  Snackbar,
-  Alert,
+  CircularProgress,
 } from '@mui/material';
 import { useUser } from '../../context/UserContext';
 import { ProfileForm, ProfileTouchedFields } from '../../models/interface';
-import { sendFormData } from '../../utils/api';
+import apiClient from '../../utils/api';
+import { uploadFile } from '../../utils/file-upload';
+import { useLoader } from '../../context/LoaderContext';
+import SnackAlert from '../../components/alert/Alert';
 
 const DEPT_CODE: Record<string, string> = {
   '103': 'CIVIL',
@@ -20,7 +22,7 @@ const DEPT_CODE: Record<string, string> = {
   '106': 'ECE',
   '114': 'MECH',
 };
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
 const Profile: React.FC = () => {
   const { user, setUser } = useUser();
@@ -40,8 +42,11 @@ const Profile: React.FC = () => {
     regNumber: false,
   });
   const [isModified, setIsModified] = useState(false);
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<
+    'success' | 'info' | 'warning' | 'error'
+  >('error');
   const [selectedProfileImage, setSelectedProfileImage] = useState<File | null>(
     null,
   );
@@ -51,6 +56,7 @@ const Profile: React.FC = () => {
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string>('');
+  const { loading, setLoading } = useLoader();
 
   useEffect(() => {
     if (user) {
@@ -95,8 +101,10 @@ const Profile: React.FC = () => {
 
   const isFileSizeValid = (file: File) => {
     if (file.size > MAX_FILE_SIZE) {
-      setError(true);
-      setErrorMessage('File size exceeds 5MB limit.');
+      setIsAlertOpen(true);
+      setAlertMessage('File size exceeds 2MB limit.');
+      setAlertSeverity('error');
+      return false;
     }
     return true;
   };
@@ -107,7 +115,6 @@ const Profile: React.FC = () => {
       if (!isFileSizeValid(file)) return false;
       else {
         setSelectedProfileImage(file);
-
         const reader = new FileReader();
         reader.onload = () => {
           setProfileImagePreviewUrl(reader.result as string);
@@ -130,17 +137,22 @@ const Profile: React.FC = () => {
           reader.onload = () => {
             certificateImage = reader.result as string;
             setFilePreviewUrl(certificateImage);
-            setFormData({ ...formData, certificateImage: certificateImage });
+            setFormData({ ...formData, certificateImage });
           };
           reader.readAsDataURL(file);
-        } else if (file.type === 'application/pdf') {
-          certificateImage = URL.createObjectURL(file);
-          setFilePreviewUrl(certificateImage);
         } else {
-          certificateImage = null;
-          setFilePreviewUrl('');
+          if (file.type === 'application/pdf') {
+            certificateImage = URL.createObjectURL(file);
+            setFilePreviewUrl(certificateImage);
+          } else {
+            certificateImage = null;
+            setFilePreviewUrl('');
+          }
+          setFormData({
+            ...formData,
+            certificateImage: certificateImage || '',
+          });
         }
-        setFormData({ ...formData, certificateImage: certificateImage || '' });
       }
     }
   };
@@ -198,18 +210,36 @@ const Profile: React.FC = () => {
     if (user) {
       const updatedUser = { ...user, ...formData };
       try {
-        const saveResp = await sendFormData(
+        setLoading(true);
+        if (selectedProfileImage) {
+          const profileImgResp = await uploadFile(
+            selectedProfileImage,
+            'profile',
+            updatedUser.regNumber,
+          );
+          if (!profileImgResp.error) updatedUser.userImage = profileImgResp;
+        }
+        if (selectedFile) {
+          const certificateResp = await uploadFile(
+            selectedFile,
+            'degree',
+            updatedUser.regNumber,
+          );
+          if (!certificateResp.error)
+            updatedUser.certificateImage = certificateResp;
+        }
+        const saveResp = await apiClient.put(
           '/user/update-profile',
           updatedUser,
-          [
-            { file: selectedProfileImage, name: 'profile' },
-            { file: selectedFile, name: 'degree' },
-          ] as { file: File; name: string }[],
-          'put',
         );
         setUser(saveResp.data);
+        setLoading(false);
+        setIsAlertOpen(true);
+        setAlertSeverity('success');
+        setAlertMessage('Profile updated successfully.');
       } catch (error) {
         console.log('\n save error...', error);
+        setLoading(false);
       }
     }
   };
@@ -231,17 +261,18 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleClose = (_: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return; // Prevent closing on clickaway
-    }
-    setError(false);
+  const handleClose = () => {
+    setIsAlertOpen(false);
   };
 
-  const allFieldsFilled = Object.values(formData).every((val) => val !== '');
-  const isFormValid =
+  const allFieldsFilled = () =>
+    Object.values(formData).every((val) => val !== '');
+  const isFormValid = () =>
     Object.values(errors).every((error) => !error) &&
     Object.values(formData).every((value) => value);
+
+  const isButtonDisabled = () =>
+    !isModified || !allFieldsFilled() || !isFormValid() || loading;
 
   return (
     <Container maxWidth="sm">
@@ -265,6 +296,9 @@ const Profile: React.FC = () => {
                 sx={{ width: 120, height: 120 }}
               />
             </Box>
+            <Typography variant="subtitle2" gutterBottom>
+              <div>(Profile image must be less than size 2MB)</div>
+            </Typography>
             <Button
               variant="contained"
               component="label"
@@ -285,7 +319,6 @@ const Profile: React.FC = () => {
                 onChange={handleProfileImageChange}
               />
             </Button>
-
             <TextField
               label="Registration Number"
               fullWidth
@@ -351,9 +384,9 @@ const Profile: React.FC = () => {
               value={splitRegNumber(formData.regNumber, 'dept')}
               disabled
             />
-
-            <Typography variant="h6" gutterBottom>
-              Upload Certificate (Image or PDF)
+            <Typography variant="subtitle2" gutterBottom>
+              <div>Upload Certificate (Image or PDF)</div>
+              <div>(Certificate must be less than size 2MB)</div>
             </Typography>
             <Button
               variant="contained"
@@ -375,32 +408,25 @@ const Profile: React.FC = () => {
                 onChange={handleFileChange}
               />
             </Button>
-
             {filePreviewUrl && (
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body2" gutterBottom>
                   Preview:
                 </Typography>
-                {filePreviewUrl.startsWith('data:image') ? (
-                  <img
-                    src={filePreviewUrl}
-                    alt="File Preview"
-                    style={{ width: '100%', maxHeight: 300 }}
-                  />
-                ) : (
-                  <iframe
-                    src={filePreviewUrl}
-                    width="100%"
-                    height="600px"
-                    title="PDF Viewer"
-                    style={{
-                      border: 'none',
-                      borderRadius: '8px',
-                      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                      marginTop: '20px',
-                    }}
-                  ></iframe>
-                )}
+                <iframe
+                  src={filePreviewUrl}
+                  width="100%"
+                  height="auto"
+                  title="Preview"
+                  style={{
+                    border: 'none',
+                    borderRadius: '8px',
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                    marginTop: '20px',
+                    maxHeight: '600px',
+                    display: 'block',
+                  }}
+                ></iframe>
               </Box>
             )}
 
@@ -409,24 +435,24 @@ const Profile: React.FC = () => {
               color="primary"
               fullWidth
               type="submit"
-              disabled={!isModified || !allFieldsFilled || !isFormValid}
+              disabled={isButtonDisabled()}
             >
-              Save Changes
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Save Changes'
+              )}
             </Button>
           </Box>
         </form>
       </Box>
 
-      <Snackbar
-        open={error}
-        autoHideDuration={4000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+      <SnackAlert
+        isOpen={isAlertOpen}
+        message={alertMessage}
+        severity={alertSeverity}
+        handleClose={handleClose}
+      />
     </Container>
   );
 };

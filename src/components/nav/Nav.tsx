@@ -58,14 +58,12 @@ const Navigation: React.FC = () => {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem onClick={handleMenuClose}>
-              <Link
-                to="/profile"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                Profile
-              </Link>
-            </MenuItem>
+            <Link
+              to="/profile"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+            </Link>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </>

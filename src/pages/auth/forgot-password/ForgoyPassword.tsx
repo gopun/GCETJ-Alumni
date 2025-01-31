@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Alert,
-  Container,
-  Snackbar,
-} from '@mui/material';
+import { Box, Button, TextField, Typography, Container } from '@mui/material';
 import apiClient from '../../../utils/api';
-// import { useNavigate } from 'react-router-dom';
+import { useLoader } from '../../../context/LoaderContext';
+import SnackAlert from '../../../components/alert/Alert';
 
 const ForgotPassword: React.FC = () => {
-  //   const navigate = useNavigate();
   const [regNumber, setregNumber] = useState('');
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { loading, setLoading } = useLoader();
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<
+    'success' | 'info' | 'warning' | 'error'
+  >('error');
 
   const [errors, setErrors] = useState<string>('');
 
@@ -43,32 +37,30 @@ const ForgotPassword: React.FC = () => {
     }
 
     setLoading(true);
-    setError(false);
-    setSuccessMessage('');
-    setErrorMessage('');
+    setIsAlertOpen(false);
+    setAlertMessage('');
 
     apiClient
       .post('/auth/send-reset-password-link', { regNumber })
-      .then((response) => {
-        console.log('\n response...', response);
-
-        setLoading(false);
-        setSuccessMessage('A password reset link has been sent to your email.');
+      .then(() => {
+        setAlertMessage('A password reset link has been sent to your email.');
+        setIsAlertOpen(true);
+        setAlertSeverity('success');
       })
       .catch((err) => {
-        setLoading(false);
+        setAlertSeverity('error');
+        setIsAlertOpen(true);
         if (err.response && err.response.data && err.response.data.message) {
-          setErrorMessage(err.response.data.message);
-          setError(true);
+          setAlertMessage(err.response.data.message);
         } else {
-          setErrorMessage('An unexpected error occurred. Please try again.');
-          setError(true);
+          setAlertMessage('An unexpected error occurred. Please try again.');
         }
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleClose = () => {
-    setError(false);
+    setIsAlertOpen(false);
   };
 
   return (
@@ -94,10 +86,6 @@ const ForgotPassword: React.FC = () => {
         <Typography variant="h4" align="center" gutterBottom>
           Forgot Password
         </Typography>
-
-        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-
-        {successMessage && <Alert severity="success">{successMessage}</Alert>}
 
         <form onSubmit={handleSubmit}>
           <TextField
@@ -126,16 +114,12 @@ const ForgotPassword: React.FC = () => {
         </form>
       </Box>
 
-      <Snackbar
-        open={error}
-        autoHideDuration={4000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+      <SnackAlert
+        isOpen={isAlertOpen}
+        message={alertMessage}
+        severity={alertSeverity}
+        handleClose={handleClose}
+      />
     </Container>
   );
 };

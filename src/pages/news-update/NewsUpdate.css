@@ -1,10 +1,31 @@
-.news-container {
+.news-top-container {
+  display: flex; /* Use flexbox to align children horizontally */
+  align-items: center; /* Vertically center both elements */
   width: 100%;
+  padding: 10px; /* Optional: Add some padding */
+}
+
+.highlights {
+  font-size: 18px; /* Adjust font size as needed */
+  font-weight: bold; /* Make the text bold */
+  color: #000000; /* Adjust text color */
+  background-color: #f9e3c4; /* Optional: Background color */
+  height: 60px; /* Ensure the container has enough height */
+  display: flex; /* Use flexbox to center text vertically */
+  align-items: center; /* Vertically center the text */
+  padding: 10px;
+}
+
+.news-container {
+  flex: 1; /* Takes the remaining space in the row */
   overflow: hidden;
-  background-color: #f8f9fa;
+  background-color: #b1b1b3;
   border-bottom: 1px solid #dee2e6;
   white-space: nowrap;
   position: relative;
+  display: flex; /* Flexbox for vertical centering */
+  align-items: center; /* Center the news-marquee vertically */
+  height: 60px; /* Adjust height as needed */
 }
 
 .news-marquee {

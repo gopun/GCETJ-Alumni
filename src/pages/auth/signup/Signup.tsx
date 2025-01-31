@@ -23,9 +23,11 @@ import { SignupForm, SignupTouchedFields } from '../../../models/interface';
 import { useNavigate } from 'react-router-dom';
 import './Signup.css';
 import moment from 'moment';
+import { useLoader } from '../../../context/LoaderContext';
 
 const Signup: React.FC = () => {
   const { setUser } = useUser();
+  const { loading, setLoading } = useLoader();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<SignupForm>({
     name: '',
@@ -140,7 +142,7 @@ const Signup: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    setLoading(true);
     const newErrors: Partial<SignupForm> = {};
 
     Object.keys(formData).forEach((key) => {
@@ -153,6 +155,7 @@ const Signup: React.FC = () => {
     });
 
     if (Object.values(newErrors).some((error) => error)) {
+      setLoading(false);
       setErrors(newErrors);
       return;
     }
@@ -180,7 +183,8 @@ const Signup: React.FC = () => {
           setErrorMessage(message);
           setError(true);
         }
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleClose = (_: React.SyntheticEvent | Event, reason?: string) => {
@@ -420,10 +424,10 @@ const Signup: React.FC = () => {
             variant="contained"
             color="primary"
             fullWidth
-            disabled={!isFormValid}
+            disabled={!isFormValid || loading}
             sx={{ mt: 2 }}
           >
-            Sign Up
+            {loading ? 'Registering...' : 'Register'}
           </Button>
         </form>
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>

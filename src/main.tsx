@@ -1,5 +1,4 @@
-import React from 'react';
-// import { StrictMode } from 'react';
+/* eslint-disable react/react-in-jsx-scope */
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,7 +10,6 @@ import { LoaderProvider } from './context/LoaderContext.tsx';
 
 const root = createRoot(document.getElementById('root')!);
 root.render(
-  // <StrictMode>
   <ThemeProvider theme={theme}>
     <CssBaseline />
     <LoaderProvider>
@@ -20,5 +18,4 @@ root.render(
       </UserProvider>
     </LoaderProvider>
   </ThemeProvider>,
-  // </StrictMode>,
 );

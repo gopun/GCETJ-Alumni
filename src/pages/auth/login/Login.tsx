@@ -10,16 +10,19 @@ import {
   InputAdornment,
   IconButton,
   Snackbar,
+  CircularProgress,
 } from '@mui/material';
 import apiClient from '../../../utils/api';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../../context/UserContext';
 import { LoginForm, LoginTouchedFields } from '../../../models/interface';
+import { useLoader } from '../../../context/LoaderContext';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { setUser } = useUser();
+  const { loading, setLoading } = useLoader();
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -86,7 +89,7 @@ const Login: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrors({}); // Clear all errors before submission
-
+    setLoading(true);
     const newErrors: { regNumber?: string; password?: string } = {};
 
     if (!formData.regNumber) {
@@ -98,6 +101,7 @@ const Login: React.FC = () => {
 
     if (newErrors.regNumber || newErrors.password) {
       setErrors(newErrors);
+      setLoading(false);
       return;
     }
 
@@ -118,7 +122,8 @@ const Login: React.FC = () => {
           setErrorMessage(err.response.data.message);
           setError(true);
         }
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleClose = (_: React.SyntheticEvent | Event, reason?: string) => {
@@ -219,9 +224,9 @@ const Login: React.FC = () => {
             color="primary"
             fullWidth
             sx={{ mt: 2 }}
-            disabled={!isFormValid}
+            disabled={!isFormValid || loading}
           >
-            Login
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
           </Button>
         </form>
         <Typography variant="body2" align="center" sx={{ mt: 2 }}>

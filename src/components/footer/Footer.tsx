@@ -18,13 +18,13 @@ const Footer: React.FC = () => {
         </p>
         <ul className="footer-links">
           <li>
-            <a href="#privacy">Privacy Policy</a>
+            <a href="#">Privacy Policy</a>
           </li>
           <li>
-            <a href="#terms">Terms of Service</a>
+            <a href="#">Terms of Service</a>
           </li>
           <li>
-            <a href="#contact">Contact Us</a>
+            <a href="#">Contact Us</a>
           </li>
         </ul>
       </div>

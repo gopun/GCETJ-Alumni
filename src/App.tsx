@@ -4,6 +4,9 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './routes';
 import apiClient from './utils/api';
 import { useUser } from './context/UserContext';
+import GlobalLoader from './components/loader/GlobalLoader';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const App: React.FC = () => {
   const { user, setUser } = useUser();
@@ -23,6 +26,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <GlobalLoader />
       <AppRoutes />
     </Router>
   );

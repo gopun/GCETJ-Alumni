@@ -1,8 +1,8 @@
 import React from 'react';
 import './Header.css'; // Import the CSS file
 import Navigation from '../nav/Nav';
-import logo from '../../assets/logo.png';
-import tnLogo from '../../assets/tn-logo.jpg';
+import logo from '../../assets/images/logo.png';
+import tnLogo from '../../assets/images/tn-logo.jpg';
 import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {

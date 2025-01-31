@@ -11,17 +11,18 @@ import {
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../../utils/api';
+import { useLoader } from '../../../context/LoaderContext';
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
   const { token } = useParams<{ token: string }>();
 
   const [password, setPassword] = useState('');
+  const { loading, setLoading } = useLoader();
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{
     password: string;
     confirmPassword: string;
@@ -72,15 +73,11 @@ const ResetPassword: React.FC = () => {
 
     apiClient
       .post(`/auth/reset-password/${token}`, { password })
-      .then((response) => {
-        console.log('\n response...', response);
-
-        setLoading(false);
+      .then(() => {
         setSuccessMessage('Your password has been successfully reset.');
         setTimeout(() => navigate('/auth/login'), 2000);
       })
       .catch((err) => {
-        setLoading(false);
         if (err.response && err.response.data && err.response.data.message) {
           setErrorMessage(err.response.data.message);
           setError(true);
@@ -88,7 +85,8 @@ const ResetPassword: React.FC = () => {
           setErrorMessage('An unexpected error occurred. Please try again.');
           setError(true);
         }
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleClose = () => {
