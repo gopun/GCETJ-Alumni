@@ -28,7 +28,9 @@ const authenticateSession = (req, res, next) => {
   if (req.session && req.session.user) {
     return next();
   }
-  res.status(401).json({ message: "Unauthorized. Please log in." });
+  res
+    .status(401)
+    .json({ message: "Unauthorized. Please log in.", session: req.session });
 };
 
 // Combined middleware for session and JWT
