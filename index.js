@@ -29,11 +29,6 @@ app.use(express.json());
 app.use(successHandler, routes);
 app.use(errorHandler);
 
-app.use((req, res, next) => {
-  console.log("Incoming cookies:", req.headers.cookie);
-  next();
-});
-
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

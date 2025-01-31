@@ -4,10 +4,10 @@ export const sessionConfig = {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_STRING,
-    collectionName: "sessions",
-  }),
+  //   store: MongoStore.create({
+  //     mongoUrl: process.env.MONGO_STRING,
+  //     collectionName: "sessions",
+  //   }),
   cookie: {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
