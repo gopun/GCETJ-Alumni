@@ -24,6 +24,7 @@ const authenticateJWT = (req, res, next) => {
 // Middleware to verify session
 const authenticateSession = (req, res, next) => {
   console.error("\n req.session..", req.session);
+  console.log("Received Cookies:", req.headers);
 
   if (req.session && req.session.user) {
     return next();
