@@ -9,9 +9,9 @@ export const sessionConfig = {
     collectionName: "sessions",
   }),
   cookie: {
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
-    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    sameSite: "Lax",
   },
 };
