@@ -9,10 +9,11 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 const App: React.FC = () => {
-  const { user, setUser } = useUser();
+  const { user, setUser, setIsUserLoading } = useUser();
 
   useEffect(() => {
     if (!user) {
+      setIsUserLoading(true);
       apiClient
         .get('/user')
         .then((response) => {
@@ -20,6 +21,9 @@ const App: React.FC = () => {
         })
         .catch((err) => {
           console.error('Failed to fetch user data:', err);
+        })
+        .finally(() => {
+          setIsUserLoading(false);
         });
     }
   }, [user, setUser]);

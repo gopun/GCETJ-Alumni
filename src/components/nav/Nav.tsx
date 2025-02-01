@@ -2,13 +2,13 @@
 import React, { useState } from 'react';
 import './Nav.css'; // Import the CSS for styling
 import { Link, NavLink } from 'react-router-dom';
-import { Button, Menu, MenuItem } from '@mui/material';
+import { Button, CircularProgress, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useUser } from '../../context/UserContext';
 import apiClient from '../../utils/api';
 
 const Navigation: React.FC = () => {
-  const { user, setUser } = useUser();
+  const { user, setUser, isUserLoading } = useUser();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -44,7 +44,9 @@ const Navigation: React.FC = () => {
           </NavLink>
         </li>
       </ul>
-      {user ? (
+      {isUserLoading ? (
+        <CircularProgress size={24} color="inherit" />
+      ) : user ? (
         <>
           <Button
             color="inherit"
