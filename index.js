@@ -9,7 +9,7 @@ require("./config/mongo-setup");
 const routes = require("./routes/index");
 const errorHandler = require("./handlers/error");
 const successHandler = require("./handlers/success");
-const { sessionConfig } = require("./config/session");
+const sessionConfig = require("./config/session");
 
 const app = express();
 const port = 3000;

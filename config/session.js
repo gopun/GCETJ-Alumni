@@ -1,6 +1,6 @@
 const MongoStore = require("connect-mongo");
 
-export const sessionConfig = {
+const sessionConfig = {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
@@ -15,3 +15,5 @@ export const sessionConfig = {
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   },
 };
+
+module.exports = sessionConfig;
