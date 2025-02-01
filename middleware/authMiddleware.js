@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const { MongoClient } = require("mongodb");
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
@@ -27,19 +26,6 @@ const authenticateSession = async (req, res, next) => {
   console.error("\n req.session..", req.session);
   console.log("Received Cookies:", req.headers.cookie);
   console.error("\n req.sessionID..", req.sessionID);
-  try {
-    const client = await MongoClient.connect(process.env.MONGO_STRING);
-    const db = client.db();
-    const session = await db
-      .collection("sessions")
-      .findOne({ _id: `sess:${req.sessionID}` });
-
-    console.log("📝 Session in MongoDB:", session);
-
-    client.close();
-  } catch (error) {
-    console.error("\n session mongo error..", error);
-  }
 
   if (req.session && req.session.user) {
     return next();

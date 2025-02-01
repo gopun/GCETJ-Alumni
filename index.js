@@ -16,14 +16,23 @@ const port = 3000;
 
 app.use(cookieParser());
 app.use(session(sessionConfig));
+
 app.use((req, res, next) => {
-  const rawCookies = req.headers.cookie || "";
-  const sessionMatch = rawCookies.match(/connect\.sid=([^;]+)/);
-  if (sessionMatch) {
-    req.sessionID = sessionMatch[1]; // Force Express to use the correct session ID
-  }
-  next();
+  console.log("📌 Incoming Session ID:", req.sessionID);
+  req.session.reload((err) => {
+    if (err) console.error("⚠️ Session Reload Failed:", err);
+    console.log("✅ Session After Reload:", req.session);
+    next();
+  });
 });
+// app.use((req, res, next) => {
+//   const rawCookies = req.headers.cookie || "";
+//   const sessionMatch = rawCookies.match(/connect\.sid=([^;]+)/);
+//   if (sessionMatch) {
+//     req.sessionID = sessionMatch[1]; // Force Express to use the correct session ID
+//   }
+//   next();
+// });
 
 app.use(
   cors({
