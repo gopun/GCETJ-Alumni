@@ -14,6 +14,7 @@ const { sessionConfig } = require("./config/session");
 const app = express();
 const port = 3000;
 
+app.set("trust proxy", 1);
 app.use(cookieParser());
 app.use(session(sessionConfig));
 
