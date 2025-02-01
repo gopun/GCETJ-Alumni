@@ -33,9 +33,6 @@ module.exports = {
           console.error("Error saving session:", err);
           return res.status(500).send("Failed to save session");
         }
-        // const sessionCookie = `connect.sid=${req.session.id}; Path=/; HttpOnly; Secure; SameSite=None`;
-        // res.setHeader("Set-Cookie", sessionCookie);
-        console.log("Session saved:", req.session);
         return res.success({
           message: "Login successful",
           user: req.session.user,
