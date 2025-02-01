@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
 dotenv.config();
 require("./config/mongo-setup");
 
@@ -13,9 +14,8 @@ const { sessionConfig } = require("./config/session");
 const app = express();
 const port = 3000;
 
+app.use(cookieParser());
 app.use(session(sessionConfig));
-console.log("\n sessionConfig..", sessionConfig);
-console.error("\n process.env..", process.env);
 
 app.use(
   cors({
