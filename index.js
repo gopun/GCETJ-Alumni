@@ -16,6 +16,14 @@ const port = 3000;
 
 app.use(cookieParser());
 app.use(session(sessionConfig));
+app.use((req, res, next) => {
+  const rawCookies = req.headers.cookie || "";
+  const sessionMatch = rawCookies.match(/connect\.sid=([^;]+)/);
+  if (sessionMatch) {
+    req.sessionID = sessionMatch[1]; // Force Express to use the correct session ID
+  }
+  next();
+});
 
 app.use(
   cors({
