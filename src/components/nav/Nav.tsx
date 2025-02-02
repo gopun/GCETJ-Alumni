@@ -1,4 +1,3 @@
-// Navigation.tsx
 import React, { useState } from 'react';
 import './Nav.css'; // Import the CSS for styling
 import { Link, NavLink } from 'react-router-dom';
