@@ -38,3 +38,24 @@
   align-items: center;
   gap: 15px; /* Space between elements */
 }
+
+@media (max-width: 768px) {
+  .header-top {
+    height: 60px; /* Slightly increase height from 50px to 60px */
+    padding: 5px 15px; /* Keep padding minimal */
+  }
+
+  .header-text {
+    font-size: 0.6rem; /* Reduce font size slightly */
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .header .logo img {
+    height: 50px; /* Reduce logo size slightly */
+  }
+
+  .header-actions {
+    gap: 10px; /* Reduce spacing between elements */
+  }
+}
