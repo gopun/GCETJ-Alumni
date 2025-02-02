@@ -39,3 +39,8 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GCETJ_ALUMNI }}
           channelId: live
           projectId: gcetj-alumni
+
+      # Step 6: Create .env.production
+      - name: Create .env.production
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env.production
