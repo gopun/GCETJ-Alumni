@@ -15,7 +15,6 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    // No hooks here
     return config;
   },
   (error) => Promise.reject(error),
