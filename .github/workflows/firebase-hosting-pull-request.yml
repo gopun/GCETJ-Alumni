@@ -31,19 +31,19 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Build the project
+      # Step 4: Create .env.production
+      - name: Create .env.production
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env.production
+
+      # Step 5: Build the project
       - name: Build project
         run: npm run build:prod
 
-      # Step 5: Deploy to Firebase Hosting Preview Channel
+      # Step 6: Deploy to Firebase Hosting Preview Channel
       - name: Deploy to Firebase Hosting Preview
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GCETJ_ALUMNI }}
           projectId: gcetj-alumni
-
-      # Step 6: Create .env.production
-      - name: Create .env.production
-        run: |
-          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env.production
