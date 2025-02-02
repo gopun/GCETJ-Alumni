@@ -23,8 +23,7 @@ const Navigation: React.FC = () => {
     handleMenuClose();
     apiClient
       .post('auth/logout')
-      .then((data) => {
-        console.log('\n data...', data);
+      .then(() => {
         setUser(null);
       })
       .catch((err) => {
