@@ -163,7 +163,6 @@ const Signup: React.FC = () => {
     apiClient
       .post('/auth/signup', formData)
       .then((data) => {
-        console.log('\n data...', data);
         setUser(data.data?.data);
         navigate('/');
       })
