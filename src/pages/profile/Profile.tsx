@@ -297,7 +297,7 @@ const Profile: React.FC = () => {
               />
             </Box>
             <Typography variant="subtitle2" gutterBottom>
-              <div>(Profile image must be less than size 2MB)</div>
+              <div>(Profile image must be less than size 2MB) *</div>
             </Typography>
             <Button
               variant="contained"
@@ -328,7 +328,7 @@ const Profile: React.FC = () => {
               disabled
             />
             <TextField
-              label="Name"
+              label="Name *"
               fullWidth
               variant="outlined"
               name="name"
@@ -339,7 +339,7 @@ const Profile: React.FC = () => {
               helperText={touched.name && errors.name}
             />
             <TextField
-              label="Email"
+              label="Email *"
               fullWidth
               variant="outlined"
               name="email"
@@ -350,7 +350,7 @@ const Profile: React.FC = () => {
               helperText={touched.email && errors.email}
             />
             <TextField
-              label="Mobile Number"
+              label="Mobile Number *"
               name="mobileNumber"
               type="tel"
               fullWidth
@@ -386,7 +386,7 @@ const Profile: React.FC = () => {
             />
             <Typography variant="subtitle2" gutterBottom>
               <div>Upload Certificate (Image or PDF)</div>
-              <div>(Certificate must be less than size 2MB)</div>
+              <div>(Certificate must be less than size 2MB) *</div>
             </Typography>
             <Button
               variant="contained"
