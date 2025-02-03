@@ -37,6 +37,12 @@ const userSchema = new mongoose.Schema(
     userImage: {
       type: String,
     },
+    batch: {
+      type: String,
+    },
+    department: {
+      type: String,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
