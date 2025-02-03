@@ -9,19 +9,16 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useUser } from '../../context/UserContext';
-import { ProfileForm, ProfileTouchedFields } from '../../models/interface';
+import {
+  ProfileForm,
+  ProfileTouchedFields,
+  User,
+} from '../../models/interface';
 import apiClient from '../../utils/api';
 import { uploadFile } from '../../utils/file-upload';
 import { useLoader } from '../../context/LoaderContext';
 import SnackAlert from '../../components/alert/Alert';
 
-const DEPT_CODE: Record<string, string> = {
-  '103': 'CIVIL',
-  '104': 'CSE',
-  '105': 'EEE',
-  '106': 'ECE',
-  '114': 'MECH',
-};
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
 const Profile: React.FC = () => {
@@ -33,6 +30,8 @@ const Profile: React.FC = () => {
     certificateImage: '',
     userImage: '',
     regNumber: '',
+    batch: '',
+    department: '',
   });
   const [errors, setErrors] = useState<Partial<ProfileForm>>({});
   const [touched, setTouched] = useState<ProfileTouchedFields>({
@@ -40,6 +39,8 @@ const Profile: React.FC = () => {
     email: false,
     mobileNumber: false,
     regNumber: false,
+    batch: false,
+    department: false,
   });
   const [isModified, setIsModified] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -67,6 +68,8 @@ const Profile: React.FC = () => {
         certificateImage: user.certificateImage || '',
         userImage: user.userImage || '',
         regNumber: user.regNumber || '',
+        batch: user.batch || '',
+        department: user.department || '',
       });
       if (user.userImage) {
         setProfileImagePreviewUrl(user.userImage);
@@ -232,7 +235,18 @@ const Profile: React.FC = () => {
           '/user/update-profile',
           updatedUser,
         );
-        setUser(saveResp.data);
+        const userObj: User = {
+          id: saveResp.data.data._id,
+          userImage: saveResp.data.data.userImage,
+          regNumber: saveResp.data.data.regNumber,
+          name: saveResp.data.data.name,
+          mobileNumber: saveResp.data.data.mobileNumber,
+          email: saveResp.data.data.email,
+          department: saveResp.data.data.department,
+          certificateImage: saveResp.data.data.certificateImage,
+          batch: saveResp.data.data.batch,
+        };
+        setUser(userObj);
         setLoading(false);
         setIsAlertOpen(true);
         setAlertSeverity('success');
@@ -241,23 +255,6 @@ const Profile: React.FC = () => {
         console.log('\n save error...', error);
         setLoading(false);
       }
-    }
-  };
-
-  const splitRegNumber = (
-    regNumber: string | undefined,
-    type: 'batch' | 'dept',
-  ): string => {
-    if (!regNumber || regNumber.length < 12) return '';
-    const year = Number(regNumber.slice(4, 6));
-    const code = regNumber.slice(6, 9);
-    switch (type) {
-      case 'batch':
-        return `20${year} - 20${year + 4}`;
-      case 'dept':
-        return DEPT_CODE[code] || 'Unknown';
-      default:
-        return '';
     }
   };
 
@@ -374,14 +371,14 @@ const Profile: React.FC = () => {
               label="Batch"
               fullWidth
               variant="outlined"
-              value={splitRegNumber(formData.regNumber, 'batch')}
+              value={user?.batch}
               disabled
             />
             <TextField
               label="Department"
               fullWidth
               variant="outlined"
-              value={splitRegNumber(formData.regNumber, 'dept')}
+              value={user?.department}
               disabled
             />
             <Typography variant="subtitle2" gutterBottom>

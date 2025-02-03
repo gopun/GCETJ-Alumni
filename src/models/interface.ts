@@ -6,6 +6,8 @@ export interface User {
   userImage: string;
   mobileNumber: string;
   regNumber: string;
+  batch: string;
+  department: string;
 }
 
 export interface SignupForm {
@@ -33,6 +35,8 @@ export interface ProfileForm {
   regNumber: string;
   certificateImage: string;
   userImage: string;
+  batch: string;
+  department: string;
 }
 
 export interface ProfileTouchedFields {
@@ -42,6 +46,8 @@ export interface ProfileTouchedFields {
   regNumber: boolean;
   password?: boolean;
   confirmPassword?: boolean;
+  batch: boolean;
+  department: boolean;
 }
 
 export interface LoginForm {
