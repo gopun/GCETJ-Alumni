@@ -18,10 +18,12 @@ import apiClient from '../../utils/api';
 import { uploadFile } from '../../utils/file-upload';
 import { useLoader } from '../../context/LoaderContext';
 import SnackAlert from '../../components/alert/Alert';
+import { useNavigate } from 'react-router-dom';
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
 const Profile: React.FC = () => {
+  const navigate = useNavigate();
   const { user, setUser } = useUser();
   const [formData, setFormData] = useState<ProfileForm>({
     name: '',
@@ -251,6 +253,9 @@ const Profile: React.FC = () => {
         setIsAlertOpen(true);
         setAlertSeverity('success');
         setAlertMessage('Profile updated successfully.');
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
       } catch (error) {
         console.log('\n save error...', error);
         setLoading(false);
