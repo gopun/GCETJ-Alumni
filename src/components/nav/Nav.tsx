@@ -41,6 +41,11 @@ const Navigation: React.FC = () => {
             Home
           </NavLink>
         </li>
+        <li>
+          <a href="https://gcetj.edu.in/" target="_blank" rel="noreferrer">
+            GCE Home
+          </a>
+        </li>
       </ul>
       {isUserLoading ? (
         <CircularProgress size={24} color="inherit" />
