@@ -255,7 +255,7 @@ const Profile: React.FC = () => {
         setAlertMessage('Profile updated successfully.');
         setTimeout(() => {
           navigate('/');
-        }, 1000);
+        }, 500);
       } catch (error) {
         console.log('\n save error...', error);
         setLoading(false);
