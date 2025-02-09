@@ -57,9 +57,14 @@ const Profile: React.FC = () => {
     string | null
   >(null);
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [filePreviewUrl, setFilePreviewUrl] = useState<string>('');
+  const [selectedCertificate, setSelectedCertificate] = useState<File | null>(
+    null,
+  );
+  const [certificatePreviewUrl, setCertificatePreviewUrl] =
+    useState<string>('');
   const { loading, setLoading } = useLoader();
+
+  const optionalFields = ['certificateImage', 'userImage'];
 
   useEffect(() => {
     if (user) {
@@ -77,7 +82,7 @@ const Profile: React.FC = () => {
         setProfileImagePreviewUrl(user.userImage);
       }
       if (user.certificateImage) {
-        setFilePreviewUrl(user.certificateImage);
+        setCertificatePreviewUrl(user.certificateImage);
       }
     }
   }, [user]);
@@ -85,24 +90,27 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (user) {
       const userForm: Partial<ProfileForm> = {};
-      Object.keys(formData).forEach((key) => {
-        userForm[key as keyof ProfileForm] =
-          user[key as keyof ProfileForm] || '';
-      });
+      Object.keys(formData)
+        .filter((key) => !optionalFields.includes(key))
+        .forEach((key) => {
+          userForm[key as keyof ProfileForm] =
+            user[key as keyof ProfileForm] || '';
+        });
 
-      const isChanged = Object.keys(formData).some(
-        (key) =>
-          formData[key as keyof ProfileForm] !==
-          userForm[key as keyof ProfileForm],
-      );
+      const isChanged = Object.keys(formData)
+        .filter((key) => !optionalFields.includes(key))
+        .some(
+          (key) =>
+            formData[key as keyof ProfileForm] !==
+            userForm[key as keyof ProfileForm],
+        );
 
-      // Check if files are changed
-      const fileChanged =
-        selectedProfileImage !== null || selectedFile !== null;
+      // const fileChanged =
+      //   selectedProfileImage !== null || selectedCertificate !== null;
 
-      setIsModified(isChanged || fileChanged);
+      setIsModified(isChanged || selectedCertificate !== null);
     }
-  }, [formData, selectedProfileImage, selectedFile, user]); // Added `user` as dependency
+  }, [formData, selectedProfileImage, selectedCertificate, user]); // Added `user` as dependency
 
   const isFileSizeValid = (file: File) => {
     if (file.size > MAX_FILE_SIZE) {
@@ -130,28 +138,28 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCertificateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (!isFileSizeValid(file)) return false;
       else {
-        setSelectedFile(file);
+        setSelectedCertificate(file);
         let certificateImage = null;
         if (file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = () => {
             certificateImage = reader.result as string;
-            setFilePreviewUrl(certificateImage);
+            setCertificatePreviewUrl(certificateImage);
             setFormData({ ...formData, certificateImage });
           };
           reader.readAsDataURL(file);
         } else {
           if (file.type === 'application/pdf') {
             certificateImage = URL.createObjectURL(file);
-            setFilePreviewUrl(certificateImage);
+            setCertificatePreviewUrl(certificateImage);
           } else {
             certificateImage = null;
-            setFilePreviewUrl('');
+            setCertificatePreviewUrl('');
           }
           setFormData({
             ...formData,
@@ -224,9 +232,9 @@ const Profile: React.FC = () => {
           );
           if (!profileImgResp.error) updatedUser.userImage = profileImgResp;
         }
-        if (selectedFile) {
+        if (selectedCertificate) {
           const certificateResp = await uploadFile(
-            selectedFile,
+            selectedCertificate,
             'degree',
             updatedUser.regNumber,
           );
@@ -268,10 +276,11 @@ const Profile: React.FC = () => {
   };
 
   const allFieldsFilled = () =>
-    Object.values(formData).every((val) => val !== '');
+    Object.entries(formData)
+      .filter(([key]) => !optionalFields.includes(key))
+      .every(([, val]) => val !== '');
   const isFormValid = () =>
-    Object.values(errors).every((error) => !error) &&
-    Object.values(formData).every((value) => value);
+    Object.values(errors).every((error) => !error) && allFieldsFilled();
 
   const isButtonDisabled = () =>
     !isModified || !allFieldsFilled() || !isFormValid() || loading;
@@ -299,7 +308,7 @@ const Profile: React.FC = () => {
               />
             </Box>
             <Typography variant="subtitle2" gutterBottom>
-              <div>(Profile image must be less than size 2MB) *</div>
+              <div>(Profile image must be less than size 2MB)</div>
             </Typography>
             <Button
               variant="contained"
@@ -330,7 +339,7 @@ const Profile: React.FC = () => {
               disabled
             />
             <TextField
-              label="Name *"
+              label="Name"
               fullWidth
               variant="outlined"
               name="name"
@@ -339,9 +348,10 @@ const Profile: React.FC = () => {
               onBlur={handleBlur}
               error={touched.name && !!errors.name}
               helperText={touched.name && errors.name}
+              required
             />
             <TextField
-              label="Email *"
+              label="Email"
               fullWidth
               variant="outlined"
               name="email"
@@ -350,9 +360,10 @@ const Profile: React.FC = () => {
               onBlur={handleBlur}
               error={touched.email && !!errors.email}
               helperText={touched.email && errors.email}
+              required
             />
             <TextField
-              label="Mobile Number *"
+              label="Mobile Number"
               name="mobileNumber"
               type="tel"
               fullWidth
@@ -407,16 +418,16 @@ const Profile: React.FC = () => {
                 type="file"
                 accept="image/*,application/pdf"
                 hidden
-                onChange={handleFileChange}
+                onChange={handleCertificateChange}
               />
             </Button>
-            {filePreviewUrl && (
+            {certificatePreviewUrl && (
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body2" gutterBottom>
                   Preview:
                 </Typography>
                 <iframe
-                  src={filePreviewUrl}
+                  src={certificatePreviewUrl}
                   width="100%"
                   height="auto"
                   title="Preview"
