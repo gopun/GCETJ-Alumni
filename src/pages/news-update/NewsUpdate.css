@@ -30,10 +30,8 @@
 
 .news-marquee {
   display: inline-block;
-  animation: scroll 15s linear infinite;
-  transition:
-    animation-play-state 0.3s ease,
-    animation-duration 0.3s ease;
+  min-width: 100vw; /* Ensures it starts off-screen */
+  animation: scroll 30s linear infinite;
 }
 
 .news-item {
@@ -45,15 +43,13 @@
 
 @keyframes scroll {
   0% {
-    transform: translateX(100%);
+    transform: translateX(100vw); /* Start fully outside the right */
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-100%); /* Move fully out to the left */
   }
 }
 
-/* Hover Effect: Slow down the scroll */
 .news-container:hover .news-marquee {
-  animation-duration: 30s; /* Reduce speed */
-  animation-play-state: paused; /* Stop on hover */
+  animation-play-state: paused; /* Stops exactly where it is */
 }

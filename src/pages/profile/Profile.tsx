@@ -398,8 +398,13 @@ const Profile: React.FC = () => {
               disabled
             />
             <Typography variant="subtitle2" gutterBottom>
-              <div>Upload Certificate (Image or PDF)</div>
-              <div>(Certificate must be less than size 2MB) *</div>
+              <div>Upload Certificate (Image or PDF)*</div>
+            </Typography>
+            <Typography variant="caption" gutterBottom>
+              <div>
+                Upload any certificate which contains registration number
+              </div>
+              <div>(Certificate must be less than size 2MB) </div>
             </Typography>
             <Button
               variant="contained"
