@@ -77,7 +77,9 @@ module.exports = {
   },
   sendPasswordLink: async (req, res) => {
     try {
-      const userData = await User.findOne({ regNumber: req.body.regNumber });
+      const userData = await User.findOne({
+        $or: [{ regNumber: req.body.regNumber }, { email: req.body.regNumber }],
+      });
       if (!userData) {
         return res.status(404).json({ message: "User not found" });
       }
