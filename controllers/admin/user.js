@@ -1,5 +1,5 @@
-const User = require("../schema/user");
-const { splitRegNumber } = require("../services/utils");
+const User = require("../../schema/user");
+const { splitRegNumber } = require("../../services/utils");
 
 module.exports = {
   getUserData: async (req, res) => {

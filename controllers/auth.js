@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../config/mailer");
 const User = require("../schema/user");
+const Notification = require("../schema/notification");
 const { splitRegNumber } = require("../services/utils");
 
 module.exports = {
@@ -97,6 +98,13 @@ module.exports = {
         text: `Click the link to reset your password: ${resetLink}`,
       };
       await sendEmail(mailOptions);
+      const savePayload = {
+        toUserId: userData._id,
+        fromUserId: userData._id,
+        type: "RESET_PASSWORD",
+      };
+      const notification = new Notification(savePayload);
+      await notification.save();
       return res.success("Successfully sent");
     } catch (error) {
       console.error("Error sending email to user:", error);

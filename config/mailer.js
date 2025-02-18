@@ -13,10 +13,30 @@ oauth2Client.setCredentials({
   refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
 });
 
-// Get the access token using the refresh token
+// Cache for the access token
+let cachedAccessToken = null;
+let tokenExpiryTime = null;
+
+// Function to refresh the token and cache it
+async function refreshAccessToken() {
+  try {
+    const { token, expiry_date } = await oauth2Client.getAccessToken();
+    cachedAccessToken = token;
+    tokenExpiryTime = expiry_date;
+    console.log("Access token refreshed");
+  } catch (error) {
+    console.error("Error refreshing access token:", error);
+    throw error; // Let the caller handle this error
+  }
+}
+
+// Function to get the access token, refresh if needed
 async function getAccessToken() {
-  const { token } = await oauth2Client.getAccessToken();
-  return token;
+  const currentTime = Date.now();
+  if (!cachedAccessToken || currentTime >= tokenExpiryTime) {
+    await refreshAccessToken(); // Refresh the token if expired or doesn't exist
+  }
+  return cachedAccessToken;
 }
 
 // Create a transporter object using OAuth2

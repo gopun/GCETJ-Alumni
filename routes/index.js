@@ -3,7 +3,7 @@ const router = express.Router();
 
 const authRoutes = require("./auth");
 const userRoutes = require("./user");
-const adminRoutes = require("./admin");
+const adminRoutes = require("./admin/index");
 const {
   authenticateSession,
   authenticateAdminSession,

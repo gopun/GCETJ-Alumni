@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const controller = require("../controllers/admin");
+const controller = require("../../controllers/admin/user");
 
-router.get("/user", controller.getUserData);
-router.post("/users", controller.getUsers);
+router.post("/", controller.getUsers);
+router.get("/get-by-id", controller.getUserData);
 router.put("/update-profile", controller.updateProfile);
 router.patch("/change-status", controller.changeStatus);
 router.patch("/make-admin", controller.makeAdmin);
