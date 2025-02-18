@@ -41,6 +41,16 @@ const Navigation: React.FC = () => {
             Home
           </NavLink>
         </li>
+        {user && user.isAdmin && (
+          <li>
+            <NavLink
+              to="/admin/users"
+              className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              Users
+            </NavLink>
+          </li>
+        )}
         <li>
           <a href="https://gcetj.edu.in/" target="_blank" rel="noreferrer">
             GCE Home

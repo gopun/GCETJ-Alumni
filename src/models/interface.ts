@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   certificateImage: string;
@@ -8,6 +8,10 @@ export interface User {
   regNumber: string;
   batch: string;
   department: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isAdmin?: boolean;
+  status?: 'Active' | 'Inactive';
 }
 
 export interface SignupForm {
@@ -53,6 +57,17 @@ export interface ProfileTouchedFields {
 export interface LoginForm {
   regNumber: string;
   password: string;
+}
+
+export type Department = 'CSE' | 'ECE' | 'EEE' | 'CIVIL' | 'MECH';
+
+export interface CountData {
+  batch: string;
+  total: number;
+  counts: Array<{
+    department: Department;
+    count: number;
+  }>;
 }
 
 export interface LoginTouchedFields {

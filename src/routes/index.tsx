@@ -11,6 +11,8 @@ import { useUser } from '../context/UserContext';
 import ProtectedRoute from './ProtectedRoute';
 import ForgotPassword from '../pages/auth/forgot-password/ForgoyPassword';
 import ResetPassword from '../pages/auth/reset-password/ResetPassword';
+import UsersList from '../pages/admin/users/list/List';
+import UserProfile from '../pages/admin/users/edit/Edit';
 
 const ProfileRedirect = ({ children }: { children: JSX.Element }) => {
   const { user } = useUser();
@@ -27,6 +29,18 @@ const IsUserLoggedIn = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/" />;
   }
   return children;
+};
+
+const AdminRoutes = () => {
+  return (
+    <Routes>
+      <Route path="users">
+        <Route index element={<UsersList />} />
+        <Route path="edit/:userId" element={<UserProfile />} />
+        <Route path="view/:userId" element={<UserProfile />} />
+      </Route>
+    </Routes>
+  );
 };
 
 const AppRoutes: React.FC = () => {
@@ -46,6 +60,14 @@ const AppRoutes: React.FC = () => {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/*"
+          element={
+            <ProtectedRoute>
+              <AdminRoutes />
             </ProtectedRoute>
           }
         />

@@ -5,6 +5,8 @@ const FOLDER_NAME = {
   degree: 'Certificates',
 };
 
+export const MAX_FILE_SIZE = 2 * 1024 * 1024;
+
 export const uploadFile = async (
   file: File,
   selectedFolder: 'profile' | 'degree',

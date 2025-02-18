@@ -15,12 +15,10 @@ import {
   User,
 } from '../../models/interface';
 import apiClient from '../../utils/api';
-import { uploadFile } from '../../utils/file-upload';
+import { MAX_FILE_SIZE, uploadFile } from '../../utils/file-upload';
 import { useLoader } from '../../context/LoaderContext';
 import SnackAlert from '../../components/alert/Alert';
 import { useNavigate } from 'react-router-dom';
-
-const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -64,7 +62,7 @@ const Profile: React.FC = () => {
     useState<string>('');
   const { loading, setLoading } = useLoader();
 
-  const optionalFields = ['certificateImage', 'userImage'];
+  const optionalFields = ['userImage'];
 
   useEffect(() => {
     if (user) {
@@ -108,9 +106,13 @@ const Profile: React.FC = () => {
       // const fileChanged =
       //   selectedProfileImage !== null || selectedCertificate !== null;
 
-      setIsModified(isChanged || selectedCertificate !== null);
+      setIsModified(
+        isChanged ||
+          selectedCertificate !== null ||
+          selectedProfileImage !== null,
+      );
     }
-  }, [formData, selectedProfileImage, selectedCertificate, user]); // Added `user` as dependency
+  }, [formData, selectedProfileImage, selectedCertificate, user]);
 
   const isFileSizeValid = (file: File) => {
     if (file.size > MAX_FILE_SIZE) {
@@ -246,7 +248,7 @@ const Profile: React.FC = () => {
           updatedUser,
         );
         const userObj: User = {
-          id: saveResp.data.data._id,
+          _id: saveResp.data.data._id,
           userImage: saveResp.data.data.userImage,
           regNumber: saveResp.data.data.regNumber,
           name: saveResp.data.data.name,

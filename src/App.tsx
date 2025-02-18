@@ -17,7 +17,7 @@ const App: React.FC = () => {
       apiClient
         .get('/user')
         .then((response) => {
-          setUser(response.data?.user);
+          setUser(response.data?.data?.user);
         })
         .catch((err) => {
           console.error('Failed to fetch user data:', err);

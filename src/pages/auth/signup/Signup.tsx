@@ -109,7 +109,7 @@ const Signup: React.FC = () => {
         break;
       case 'regNumber':
         if (!value) error = 'Registration number is required.';
-        else if (!validateRegNum(value))
+        else if (value.length != 12 || !validateRegNum(value))
           error = 'Please enter valid Registration number.';
         break;
       case 'email':
