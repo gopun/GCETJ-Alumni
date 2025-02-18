@@ -26,7 +26,17 @@ const authenticateSession = async (req, res, next) => {
   if (req.session && req.session.user) {
     return next();
   }
-  res
+  return res
+    .status(401)
+    .json({ message: "Unauthorized. Please log in.", session: req.session });
+};
+
+// Middleware to verify admin session
+const authenticateAdminSession = async (req, res, next) => {
+  if (req.session && req.session.user && req.session.user.isAdmin) {
+    return next();
+  }
+  return res
     .status(401)
     .json({ message: "Unauthorized. Please log in.", session: req.session });
 };
@@ -40,4 +50,9 @@ const combinedAuth = (req, res, next) => {
   authenticateJWT(req, res, next);
 };
 
-module.exports = { authenticateJWT, authenticateSession, combinedAuth };
+module.exports = {
+  authenticateJWT,
+  authenticateSession,
+  authenticateAdminSession,
+  combinedAuth,
+};

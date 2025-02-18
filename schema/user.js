@@ -43,6 +43,14 @@ const userSchema = new mongoose.Schema(
     department: {
       type: String,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    status: {
+      type: String,
+      default: "Active",
+    },
     createdAt: {
       type: Date,
       default: Date.now,

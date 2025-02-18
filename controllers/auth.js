@@ -1,28 +1,7 @@
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../config/mailer");
 const User = require("../schema/user");
-
-const DEPT_CODE = {
-  103: "CIVIL",
-  104: "CSE",
-  105: "EEE",
-  106: "ECE",
-  114: "MECH",
-};
-
-const splitRegNumber = (regNumber, type) => {
-  if (!regNumber || regNumber.length < 12) return "";
-  const year = Number(regNumber.slice(4, 6));
-  const code = regNumber.slice(6, 9);
-  switch (type) {
-    case "batch":
-      return `20${year} - 20${year + 4}`;
-    case "dept":
-      return DEPT_CODE[code] || "Unknown";
-    default:
-      return "";
-  }
-};
+const { splitRegNumber } = require("../services/utils");
 
 module.exports = {
   signup: async (req, res) => {
@@ -31,6 +10,7 @@ module.exports = {
         ...req.body,
         batch: splitRegNumber(req.body.regNumber, "batch"),
         department: splitRegNumber(req.body.regNumber, "dept"),
+        status: "Active",
       };
       const user = new User(savePayload);
       await user.save();
@@ -49,7 +29,12 @@ module.exports = {
   },
   login: async (req, res) => {
     try {
-      const userData = await User.findOne({ regNumber: req.body.regNumber });
+      const userData = await User.findOne({
+        regNumber: req.body.regNumber,
+        status: {
+          $ne: "Inactive",
+        },
+      });
       if (!userData) {
         return res.status(404).json({ message: "User not found" });
       }

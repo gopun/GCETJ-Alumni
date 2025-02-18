@@ -4,7 +4,7 @@ const User = require("../schema/user");
 module.exports = {
   getUserData: async (req, res) => {
     try {
-      return res.status(200).json({ user: req.session.user });
+      return res.success({ user: req.session.user });
     } catch (error) {
       console.error("Error getting user:", error.message);
       return res.status(500).send(error);
