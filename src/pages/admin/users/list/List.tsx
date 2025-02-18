@@ -377,7 +377,18 @@ const List: React.FC = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gap: 2,
+                  width: '100%',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', // Dynamic column sizing
+                  justifyContent: 'center',
+                  '@media (max-width: 600px)': {
+                    gridTemplateColumns: 'repeat(2, 1fr)', // Ensures 2x2 layout on small screens
+                  },
+                }}
+              >
                 {yearData.counts.map((countData) => {
                   const key = `${yearData.batch}-${countData.department}`;
                   const isSelected = !!selectedFilters[key];
@@ -391,16 +402,14 @@ const List: React.FC = () => {
                         handleFilterClick(yearData.batch, countData.department);
                       }}
                       sx={{
-                        flex: 1,
                         textAlign: 'center',
-                        minWidth: 120,
                         p: 2,
                         cursor: 'pointer',
                         borderRadius: 2,
                         boxShadow: isSelected
                           ? '0px 0px 10px rgba(0, 0, 255, 0.5)'
                           : 'none',
-                        bgcolor: isSelected ? '#b3e5fc' : 'none', // Light blue if selected
+                        bgcolor: isSelected ? '#b3e5fc' : 'none',
                         transition: '0.2s',
                       }}
                     >
