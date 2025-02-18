@@ -201,7 +201,7 @@ const Signup: React.FC = () => {
     if (
       clgCode != '8227' ||
       !['103', '104', '105', '106', '114'].includes(code) ||
-      Number(serialNumber) > 70
+      Number(serialNumber) > 999
     )
       return false;
     const currMonth = moment().month();

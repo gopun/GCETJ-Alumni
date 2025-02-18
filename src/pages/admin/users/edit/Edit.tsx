@@ -98,7 +98,9 @@ const UserProfile = () => {
   const fetchUser = async () => {
     try {
       setLoading(true);
-      const userDataResp = await apiClient.get(`/admin/user?userId=${userId}`);
+      const userDataResp = await apiClient.get(
+        `/admin/users/get-by-id?userId=${userId}`,
+      );
       return userDataResp.data?.data?.user;
     } catch (error) {
       console.log('\n get user error..', error);
@@ -163,7 +165,7 @@ const UserProfile = () => {
             updatedUser.certificateImage = certificateResp;
         }
         const saveResp = await apiClient.put(
-          '/admin/update-profile',
+          '/admin/users/update-profile',
           updatedUser,
         );
         const userObj: User = {
@@ -278,7 +280,7 @@ const UserProfile = () => {
     if (
       clgCode != '8227' ||
       !['103', '104', '105', '106', '114'].includes(code) ||
-      Number(serialNumber) > 70
+      Number(serialNumber) > 999
     )
       return false;
     const currMonth = moment().month();

@@ -34,6 +34,7 @@ import PersonIcon from '@mui/icons-material/Person'; // Non-admin icon
 import Warning from '@mui/icons-material/Warning';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
+import Notification from '@mui/icons-material/Notifications';
 import DeleteIcon from '@mui/icons-material/Delete';
 import moment from 'moment';
 import './List.css';
@@ -41,6 +42,7 @@ import { CountData, Department, User } from '../../../../models/interface';
 import apiClient from '../../../../utils/api';
 import { NavLink } from 'react-router-dom';
 import { useLoader } from '../../../../context/LoaderContext';
+import SnackAlert from '../../../../components/alert/Alert';
 
 const List: React.FC = () => {
   const [page, setPage] = useState<number>(0);
@@ -65,6 +67,11 @@ const List: React.FC = () => {
     }>
   >([]);
   const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<
+    'success' | 'info' | 'warning' | 'error'
+  >('error');
   const { setLoading } = useLoader();
 
   const columns: Array<{
@@ -146,7 +153,7 @@ const List: React.FC = () => {
         status: status == 'Inactive' ? 'Active' : 'Inactive',
       };
       const statusChangeResp = await apiClient.patch(
-        '/admin/change-status',
+        '/admin/users/change-status',
         payload,
       );
       const updatedusers = users.map((userData) => {
@@ -171,7 +178,7 @@ const List: React.FC = () => {
         isAdmin: admin,
       };
       const adminChangeResp = await apiClient.patch(
-        '/admin/make-admin',
+        '/admin/users/make-admin',
         payload,
       );
       const updatedusers = users.map((userData) => {
@@ -192,7 +199,7 @@ const List: React.FC = () => {
     try {
       setLoading(true);
       const deleteResp = await apiClient.delete(
-        '/admin/delete-user?userId=' + id,
+        '/admin/users/delete-user?userId=' + id,
       );
       console.log('\n deleteResp..', deleteResp);
 
@@ -226,6 +233,29 @@ const List: React.FC = () => {
       handleDelete(selectedRow._id);
       handleCloseDialog();
     }
+  };
+
+  const notifyFileUpload = async (rowData: User) => {
+    try {
+      setLoading(true);
+      await apiClient.post('/admin/notification/upload-certificate', {
+        userId: rowData._id,
+      });
+      setIsAlertOpen(true);
+      setAlertMessage('Notification sent successfully.');
+      setAlertSeverity('success');
+    } catch (error) {
+      console.log('\n notifyFileUpload error...', error);
+      setIsAlertOpen(true);
+      setAlertMessage('Notification not sent. Please try again.');
+      setAlertSeverity('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setIsAlertOpen(false);
   };
 
   const handleFilterClick = (
@@ -492,6 +522,17 @@ const List: React.FC = () => {
                                 </IconButton>
                               </Tooltip>
                             </NavLink>
+
+                            {!row.certificateImage && (
+                              <Tooltip title="Notify" placement="top">
+                                <IconButton
+                                  color="primary"
+                                  onClick={() => notifyFileUpload(row)}
+                                >
+                                  <Notification />
+                                </IconButton>
+                              </Tooltip>
+                            )}
                           </Box>
 
                           <Box display="flex" justifyContent="flex-end">
@@ -642,6 +683,13 @@ const List: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <SnackAlert
+        isOpen={isAlertOpen}
+        message={alertMessage}
+        severity={alertSeverity}
+        handleClose={handleClose}
+      />
     </Paper>
   );
 };
