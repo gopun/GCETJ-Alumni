@@ -35,6 +35,7 @@ module.exports = {
         order = "desc",
         search = "",
         selectedBatches = [],
+        selectedDepartments = [],
       } = req.body;
 
       const pageNumber = parseInt(page, 10);
@@ -52,8 +53,17 @@ module.exports = {
             ],
           }
         : {};
+
       if (selectedBatches.length)
         searchQuery = { $and: [searchQuery, { $or: selectedBatches }] };
+
+      if (selectedDepartments.length)
+        searchQuery = {
+          $and: [
+            searchQuery,
+            { $or: selectedDepartments.map((dept) => ({ department: dept })) },
+          ],
+        };
 
       const pipeline = [
         // 1️⃣ Search Filter (Case-insensitive)
