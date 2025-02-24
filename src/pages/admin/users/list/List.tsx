@@ -38,7 +38,12 @@ import Notification from '@mui/icons-material/Notifications';
 import DeleteIcon from '@mui/icons-material/Delete';
 import moment from 'moment';
 import './List.css';
-import { CountData, Department, User } from '../../../../models/interface';
+import {
+  CountData,
+  Department,
+  DepartmentCountData,
+  User,
+} from '../../../../models/interface';
 import apiClient from '../../../../utils/api';
 import { NavLink } from 'react-router-dom';
 import { useLoader } from '../../../../context/LoaderContext';
@@ -57,6 +62,9 @@ const List: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRow, setSelectedRow] = useState<User | null>(null);
   const [countData, setCountData] = useState<Array<CountData>>([]);
+  const [deptCountData, setDeptCountData] = useState<
+    Array<DepartmentCountData>
+  >([]);
   const [selectedFilters, setSelectedFilters] = useState<{
     [key: string]: boolean;
   }>({});
@@ -65,6 +73,9 @@ const List: React.FC = () => {
       department: Department;
       batch: string;
     }>
+  >([]);
+  const [selectedDepartments, setSelectedDepartments] = useState<
+    Array<Department>
   >([]);
   const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -99,6 +110,7 @@ const List: React.FC = () => {
       setLoading(true);
       const payload = {
         selectedBatches,
+        selectedDepartments,
         page,
         limit: rowsPerPage,
         search,
@@ -138,12 +150,33 @@ const List: React.FC = () => {
       setTotalCount(data.totalCount);
       setTotalPages(Math.ceil(data.totalCount / rowsPerPage));
       setCountData(data?.countData);
+      setDeptCountData(
+        data?.countData.reduce(
+          (
+            acc: { department: Department; count: number }[],
+            batch: { counts: { department: Department; count: number }[] },
+          ) => {
+            batch.counts.forEach(({ department, count }) => {
+              const existingDept = acc.find(
+                (item) => item.department === department,
+              );
+              if (existingDept) {
+                existingDept.count += count;
+              } else {
+                acc.push({ department, count });
+              }
+            });
+            return acc;
+          },
+          [],
+        ),
+      );
     });
   };
 
   useEffect(() => {
     reloadData();
-  }, [page, rowsPerPage, order, orderBy, selectedBatches]);
+  }, [page, rowsPerPage, order, orderBy, selectedBatches, selectedDepartments]);
 
   const handleStatusChange = async (id: string, status: string) => {
     try {
@@ -198,11 +231,7 @@ const List: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       setLoading(true);
-      const deleteResp = await apiClient.delete(
-        '/admin/users/delete-user?userId=' + id,
-      );
-      console.log('\n deleteResp..', deleteResp);
-
+      await apiClient.delete('/admin/users/delete-user?userId=' + id);
       const updatedusers = users.filter((userData) => userData._id !== id);
       setUsers(updatedusers);
     } catch (error) {
@@ -258,24 +287,40 @@ const List: React.FC = () => {
     setIsAlertOpen(false);
   };
 
-  const handleFilterClick = (
-    batch: string,
-    department: 'CSE' | 'ECE' | 'EEE' | 'CIVIL' | 'MECH',
-  ) => {
-    const key = `${batch}-${department}`;
-    setSelectedBatches((prevFilters) => {
-      const isSelected = prevFilters.some(
-        (item) => item.batch === batch && item.department === department,
-      );
-
-      if (isSelected) {
-        return prevFilters.filter(
-          (item) => !(item.batch === batch && item.department === department),
+  const handleFilterClick = ({
+    batch,
+    department,
+  }: {
+    batch?: string;
+    department: Department;
+  }) => {
+    let key = 'department-count-' + department + '-card';
+    if (batch) {
+      key = `${batch}-${department}`;
+      setSelectedBatches((prevFilters) => {
+        const isSelected = prevFilters.some(
+          (item) => item.batch === batch && item.department === department,
         );
-      } else {
-        return [...prevFilters, { batch, department }];
-      }
-    });
+
+        if (isSelected) {
+          return prevFilters.filter(
+            (item) => !(item.batch === batch && item.department === department),
+          );
+        } else {
+          return [...prevFilters, { batch, department }];
+        }
+      });
+    } else {
+      setSelectedDepartments((prevFilters) => {
+        const isSelected = prevFilters.some((item) => item === department);
+
+        if (isSelected) {
+          return prevFilters.filter((item) => !(item === department));
+        } else {
+          return [...prevFilters, department];
+        }
+      });
+    }
     setSelectedFilters((prev) => ({
       ...prev,
       [key]: !prev[key],
@@ -375,6 +420,58 @@ const List: React.FC = () => {
             {countData.reduce((acc, batch) => acc + batch.total, 0)}
           </Typography>
         </Box>
+
+        <Box
+          key={'department-count-box'}
+          sx={{
+            borderRadius: 2,
+            bgcolor: '#f5f5f5',
+            padding: '10px',
+            marginBottom: '20px',
+            display: 'grid',
+            gap: 2,
+            width: '100%',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', // Dynamic column sizing
+            justifyContent: 'center',
+            '@media (max-width: 600px)': {
+              gridTemplateColumns: 'repeat(2, 1fr)', // Ensures 2x2 layout on small screens
+            },
+          }}
+        >
+          {deptCountData.map((deptCount) => {
+            const key = 'department-count-' + deptCount.department + '-card';
+            const isSelected = !!selectedFilters[key];
+            return (
+              <Card
+                key={key}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleFilterClick({ department: deptCount.department });
+                }}
+                sx={{
+                  textAlign: 'center',
+                  p: 2,
+                  cursor: 'pointer',
+                  borderRadius: 2,
+                  boxShadow: isSelected
+                    ? '0px 0px 10px rgba(0, 0, 255, 0.5)'
+                    : 'none',
+                  bgcolor: isSelected ? '#b3e5fc' : 'none',
+                  transition: '0.2s',
+                }}
+              >
+                <CardContent>
+                  <Typography variant="body1" fontWeight="bold">
+                    {deptCount.department}
+                  </Typography>
+                  <Typography variant="h6">{deptCount.count}</Typography>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </Box>
+
         {countData.map((yearData) => (
           <Accordion
             key={yearData.batch}
@@ -429,7 +526,10 @@ const List: React.FC = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        handleFilterClick(yearData.batch, countData.department);
+                        handleFilterClick({
+                          batch: yearData.batch,
+                          department: countData.department,
+                        });
                       }}
                       sx={{
                         textAlign: 'center',
@@ -491,7 +591,7 @@ const List: React.FC = () => {
       </Box>
 
       {/* Table Section */}
-      <TableContainer sx={{ maxHeight: 400 }}>
+      <TableContainer sx={{ maxHeight: 700 }}>
         <Table>
           <EnhancedTableHead />
           <TableBody>

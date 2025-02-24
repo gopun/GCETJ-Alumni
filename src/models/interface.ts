@@ -70,6 +70,11 @@ export interface CountData {
   }>;
 }
 
+export interface DepartmentCountData {
+  department: Department;
+  count: number;
+}
+
 export interface LoginTouchedFields {
   regNumber: boolean;
   password: boolean;
